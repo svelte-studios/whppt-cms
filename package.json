@@ -1,0 +1,69 @@
+{
+  "name": "whppt",
+  "version": "0.1.0",
+  "description": "Easy to use CMS for javascript projects.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "DEBUG='whppt:*' NODE_ENV='development' babel-watch -w server src/server/bin/www",
+    "start": "node ./src/server/bin/www",
+    "test": "ava",
+    "babel": "babel-watch -h"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svelte-studios/whppt-cms.git"
+  },
+  "keywords": [
+    "CMS",
+    "javascript",
+    "modern"
+  ],
+  "author": "Svelte Dev Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/svelte-studios/whppt-cms/issues"
+  },
+  "homepage": "https://github.com/svelte-studios/whppt-cms#readme",
+  "ava": {
+    "require": [
+      "@babel/register"
+    ],
+    "files": [
+      "test/**/*.js"
+    ],
+    "concurrency": 5,
+    "failFast": true,
+    "failWithoutAssertions": false,
+    "compileEnhancements": false
+  },
+  "dependencies": {
+    "auth-header": "^0.3.1",
+    "body-parser": "~1.17.1",
+    "debug": "~2.6.3",
+    "elasticsearch": "^15.1.1",
+    "express": "~4.15.2",
+    "express-fileupload": "^0.3.0",
+    "express-graphql": "^0.6.12",
+    "express-promise-json-router": "^1.0.7",
+    "graphql": "^0.13.2",
+    "jsonwebtoken": "^8.0.1",
+    "lodash": "^4.17.4",
+    "morgan": "~1.8.1",
+    "shortid": "^2.2.12"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.6",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-vue": "^2.0.2",
+    "babel-register": "^6.26.0",
+    "babel-watch": "^2.0.7",
+    "cookie-parser": "^1.4.3",
+    "eslint": "^5.2.0",
+    "eslint-config-problems": "^1.1.0",
+    "eslint-plugin-import": "^2.13.0",
+    "serve-favicon": "^2.5.0",
+    "uniqid": "^5.0.3"
+  }
+}
