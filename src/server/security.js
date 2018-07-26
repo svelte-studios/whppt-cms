@@ -4,9 +4,9 @@ const uniqid = require("uniqid");
 const _ = require("lodash");
 
 module.exports = ({ $db, $logger, $config }) => {
-  const secret = $config.security.token.secret;
-  const issuer = $config.security.token.issuer;
-  const audience = $config.security.token.audience;
+  const secret = _.get($config, "security.token.secret", "insecure");
+  const issuer = _.get($config, "security.token.issuer", "whppt");
+  const audience = _.get($config, "security.token.audience", "");
 
   return {
     createIdToken(user) {
@@ -74,7 +74,7 @@ module.exports = ({ $db, $logger, $config }) => {
       };
     },
 
-    authorize: {
+    authorise: {
       account(accountParam) {
         return (req, res, next) => {
           const requestedAccount = req.params[accountParam];
@@ -89,8 +89,6 @@ module.exports = ({ $db, $logger, $config }) => {
         return (req, res, next) => {
           const permissions = req.token.scope;
           const projectId = req.params[project_param];
-          console.log("PROJECTID", projectId);
-          console.log("PERMISSIONS.PROJECTS", permissions.projects);
           const projectPermission = _.find(permissions.projects, {
             id: projectId
           });
@@ -107,10 +105,7 @@ module.exports = ({ $db, $logger, $config }) => {
     },
 
     login(creds) {
-      return $db.User.forLogin(creds.email).then(user => {
-        if (user.password !== creds.password)
-          throw new Error("Invalid login credentials");
-
+      return $db.User.forLogin(creds).then(user => {
         return Promise.resolve({
           user: { id: user.id, email: user.email },
           access_token: this.createAccessToken(user)

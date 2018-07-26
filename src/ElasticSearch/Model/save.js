@@ -1,15 +1,15 @@
 import { find } from "lodash";
 
 export default ({ $elastic }) => {
-  const getOrder = (project, type) => {
+  const getNextOrderNumber = (project, type) => {
     return $elastic
       .count({ index: project.id, type: type.id })
-      .then(response => response.count)
+      .then(response => response.count + 1)
       .catch(() => 1);
   };
 
   return ({ $project, $type, $Id }, { item }) => {
-    return getOrder($project, $type).then(order => {
+    return getNextOrderNumber($project, $type).then(order => {
       item._order = item._order || order;
 
       const _id = item.id || $Id();

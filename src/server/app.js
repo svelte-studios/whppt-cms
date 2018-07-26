@@ -23,9 +23,26 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// app.use("*", (req, res, next) => {
+//   console.log("REQ.URL", req.url);
+//   next();
+// });
+
 _.each($routes, route => {
-  app.use("/admin", route);
+  app.use("/", route);
 });
+
+if (process.env.NODE_ENV === "development") {
+  const webpack = require("webpack");
+  const webpackDevMiddleware = require("webpack-dev-middleware");
+  const config = require("../../webpack.config.js");
+  const compiler = webpack(config);
+  app.use(
+    webpackDevMiddleware(compiler, {
+      publicPath: config.output.publicPath
+    })
+  );
+}
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

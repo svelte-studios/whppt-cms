@@ -18,6 +18,7 @@ const $authorise = $security.authorize;
 const $ROLES = $security.ROLES;
 const $routes = Routes({
   $JsonRouter,
+  $security,
   $authenticate,
   $authorise,
   $db,

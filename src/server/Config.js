@@ -6,7 +6,7 @@ export default ({ $logger }) => {
   const file = `${process.cwd()}/whppt.config.js`;
   $logger.info("Loading config from %s", file);
   if (fs.existsSync(file)) {
-    config = require(file);
+    config = require(file) || {};
   }
 
   $logger.info("Whppt starting with config %o", config);

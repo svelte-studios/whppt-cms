@@ -1,4 +1,5 @@
 {
-  "presets": ["vue", "env"],
+  "presets": ["env", "stage-2"],
+  "plugins": ["transform-runtime"],
   "sourceMaps": "inline"
 }

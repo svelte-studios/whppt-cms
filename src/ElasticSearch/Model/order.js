@@ -2,7 +2,7 @@ import { find, reduce } from "lodash";
 
 export default ({ $elastic }) => {
   return ({ $project, $type }, { items }) => {
-    return Promise.resolve(() => {
+    return Promise.resolve().then(() => {
       const updates = reduce(
         items,
         (body, item, index) => {

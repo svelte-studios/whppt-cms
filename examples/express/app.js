@@ -5,20 +5,21 @@ var logger = require("morgan");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var sassMiddleware = require("node-sass-middleware");
-var cors = require("express-cors");
+// var cors = require("express-cors");
 var fileUpload = require("express-fileupload");
-
 var index = require("./routes/index");
 var users = require("./routes/users");
 
+var whppt = require("whppt");
+
 var app = express();
 
-app.use(
-  cors({
-    allowedOrigins: ["localhost:8082"],
-    headers: ["authorization", "Content-Type"]
-  })
-);
+// app.use(
+//   cors({
+//     allowedOrigins: ["localhost:8082"],
+//     headers: ["authorization", "Content-Type"]
+//   })
+// );
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -40,6 +41,10 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "public")));
 app.use(fileUpload());
+
+for (var i = 0; i < whppt.$routes.length; i++) {
+  app.use("/admin", whppt.$routes[i]);
+}
 
 app.use("/", index);
 app.use("/users", users);

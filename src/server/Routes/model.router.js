@@ -1,76 +1,71 @@
-export default ({ $JsonRouter, $authenticate, $authorise, $db, $ROLES }) => {
+import { find, assign } from "lodash";
+
+export default ({ $JsonRouter, $security, $db, $ROLES, $projects }) => {
   const router = $JsonRouter();
 
   router.get(
-    "/project/:project/type/:type/list",
-    $authenticate(),
-    $authorise.project("project", $ROLES.READ),
-    req => $db.Model.list(req.params.project, req.params.type)
+    "/api/project/:projectId/type/:type",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.READ),
+    req => {
+      const project = find($projects, { id: req.params.projectId });
+      return Promise.resolve(find(project.types, { id: req.params.type }));
+    }
   );
 
   router.get(
-    "/project/:project/type/:type/model/:id",
-    $authenticate(),
-    $authorise.project("project", $ROLES.READ),
-    req => $db.Model.byId(req.params.project, req.params.type, req.params.id)
+    "/api/project/:projectId/type/:type/attributes",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.READ),
+    req => {
+      const _project = find($projects, { id: req.params.projectId });
+      const _type = find(_project.types, { id: req.params.type });
+      return Promise.resolve(_type.attributes);
+    }
+  );
+
+  router.get(
+    "/api/project/:projectId/type/:type/list",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.READ),
+    req => {
+      return $db.Model.list(req.params);
+    }
+  );
+
+  router.get(
+    "/api/project/:projectId/type/:type/model/:id",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.READ),
+    req => $db.Model.byId(req.params)
   );
 
   router.post(
-    "/project/:project/type/:type/model",
-    $authenticate(),
-    $authorise.project("project", $ROLES.EDIT),
-    req => $db.Model.save(req.params.project, req.params.type, req.body)
+    "/api/project/:projectId/type/:type/model",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.EDIT),
+    req => {
+      const args = assign({ item: req.body }, req.params);
+      return $db.Model.save(args);
+    }
   );
 
   router.post(
-    "/project/:project/type/:type/model/:id/delete",
-    $authenticate(),
-    $authorise.project("project", $ROLES.ADMIN),
-    req => $db.Model.remove(req.params.project, req.params.type, req.params.id)
+    "/api/project/:projectId/type/:type/model/:id/delete",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.ADMIN),
+    req => $db.Model.remove(req.params)
   );
 
   router.post(
-    "/project/:project/type/:type/order",
-    $authenticate(),
-    $authorise.project("project", $ROLES.EDIT),
-    req => $db.Model.order(req.params.project, req.params.type, req.body)
+    "/api/project/:projectId/type/:type/order",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.EDIT),
+    req => {
+      const args = assign({ items: req.body }, req.params);
+      return $db.Model.order(args);
+    }
   );
 
   return router;
 };
-
-// router.get(
-//   "/api/project/:projectId/type/:type/attributes",
-//   sec.authenticate(),
-//   sec.authorize.project("projectId", ROLES.READ),
-//   (req, res) => {
-//     return queryProjectById(req.params.projectId).then(proj => {
-//       const project = _.find(projects, {
-//         id: proj.key
-//       });
-//       const type = _.find(project.types, {
-//         id: req.params.type
-//       });
-//
-//       return type.attributes;
-//     });
-//   }
-// );
-
-// router.get(
-//   "/api/project/:projectId/type/:type",
-//   sec.authenticate(),
-//   sec.authorize.project("projectId", ROLES.READ),
-//   (req, res) => {
-//     return queryProjectById(req.params.projectId).then(proj => {
-//       const project = _.find(projects, {
-//         id: proj.key
-//       });
-//       const type = _.find(project.types, {
-//         id: req.params.type
-//       });
-//
-//       return type;
-//     });
-//   }
-// );
