@@ -13,7 +13,8 @@
     "build:babel_core": "babel src/server --out-dir .build --ignore src/server/app.js --source-maps false",
     "build:babel_elasticsearch": "babel src/ElasticSearch --out-dir .build/ElasticDB --source-maps false",
     "build:package": "node ./distPackage.js",
-    "start": "cd .build && npm i && DEBUG='whppt:*' NODE_ENV='production' node ./bin/www"
+    "start": "cd .build && npm i && DEBUG='whppt:*' NODE_ENV='production' node ./bin/www",
+    "deploy": "npm publish --registry https://registry.npmjs.org .build"
   },
   "repository": {
     "type": "git",
