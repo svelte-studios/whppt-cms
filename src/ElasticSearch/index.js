@@ -1,5 +1,6 @@
 import Model from "./Model";
 import User from "./User";
+import Image from "./Image";
 
 const elasticsearch = require("elasticsearch");
 
@@ -9,6 +10,7 @@ export default (config, options) => {
 
   return {
     User: User({ $elastic, $options: options }),
-    Model: Model({ $elastic })
+    Model: Model({ $elastic }),
+    Image: Image({ $elastic })
   };
 };

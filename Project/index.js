@@ -9,10 +9,11 @@ const openinghours = require("./openinghours");
 
 const options = {
   id: "test",
+  key: "test123",
   name: "Test",
   db: ElasticDB(elastic_config),
   cloudinary: {
-    cloud_name: "dne6gsjnx",
+    cloud_name: "",
     api_key: "",
     api_secret: ""
   },

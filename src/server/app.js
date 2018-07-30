@@ -32,11 +32,12 @@ _.each($routes, route => {
   app.use("/", route);
 });
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.WHPPT_ENV === "development") {
   const webpack = require("webpack");
   const webpackDevMiddleware = require("webpack-dev-middleware");
   const config = require("../../webpack.config.js");
   const compiler = webpack(config);
+  console.log('Loading development middleware ...')
   app.use(
     webpackDevMiddleware(compiler, {
       publicPath: config.output.publicPath

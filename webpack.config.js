@@ -57,7 +57,7 @@ const clientConfig = {
     ]
   },
   plugins: [
-    // new HtmlWebpackPlugin({ template: "./src/web/index.html" }),
+    new HtmlWebpackPlugin({ template: "./src/web/index.html" }),
     new VueLoaderPlugin()
   ],
   resolve: {

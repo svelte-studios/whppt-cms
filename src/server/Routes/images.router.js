@@ -1,23 +1,26 @@
-const router = require_local('services/json_router')();
-const sec = require_local('services/security');
-const id = require_local('services/id');
-const cloudinary = require('cloudinary');
-const _ = require('lodash');
-const projects = require_local('services/projects');
-const queryProjectById = require_local('domain/Project/queries/byId');
-const image_uploader = require_local('services/image_uploader');
+export default ({ $JsonRouter, $security, $image_uploader, $db, $ROLES }) => {
+  const router = $JsonRouter();
 
-const ROLES = sec.ROLES;
+  router.post(
+    "/api/project/:projectId/image",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.READ),
+    req => {
+      const projectId = req.params.projectId;
+      const image_file = req.files.image_file;
 
-router.post('/api/project/:projectId/image',
-  sec.authenticate(),
-  sec.authorize.project("projectId", ROLES.READ),
-  (req, res) => {
-    return queryProjectById(req.params.projectId).then(proj => {
-      const project = _.find(projects, { id: proj.key });
-      if (!project) return reject({ message: 'Project not found!' });
-      return image_uploader(project, req.files.image_file)
-    });
-  });
+      return $image_uploader(projectId, image_file).then(image => {
+        return $db.Image.save({ projectId, image }).then(result => {
+          return {
+            store: image.store,
+            id: result.id,
+            url: image.url,
+            meta: image.meta
+          };
+        });
+      });
+    }
+  );
 
-module.exports = router;
+  return router;
+};

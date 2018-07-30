@@ -6,6 +6,7 @@ import Routes from "./Routes";
 import $Id from "./id";
 import Database from "./Database";
 import $logger from "./logger";
+import Image_Uploader from "./Image_Uploader";
 
 const $config = Config({ $logger });
 const $projects = $config.projects;
@@ -16,6 +17,8 @@ const $decodeAccessToken = $security.decodeAccessToken;
 const $authenticate = $security.authenticate;
 const $authorise = $security.authorize;
 const $ROLES = $security.ROLES;
+const $image_uploader = Image_Uploader({ $db, $projects });
+
 const $routes = Routes({
   $JsonRouter,
   $security,
@@ -25,7 +28,8 @@ const $routes = Routes({
   $ROLES,
   $projects,
   $createAccessToken,
-  $decodeAccessToken
+  $decodeAccessToken,
+  $image_uploader
 });
 
 export { $config, $createAccessToken, $routes };

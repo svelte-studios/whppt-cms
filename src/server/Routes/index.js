@@ -4,6 +4,7 @@ import Graph from "./graph.router";
 import Security from "./security.router";
 import Project from "./project.router";
 import Model from "./model.router";
+import Images from "./images.router";
 
 export default context => {
   const router = context.$JsonRouter();
@@ -40,7 +41,9 @@ export default context => {
         <script type="text/javascript">
           whppt_api_base_url = "${req.originalUrl}"
         </script>
-        <script type="text/javascript" src="${req.originalUrl}/main.js"></script></body>
+        <script type="text/javascript" src="${
+          req.originalUrl
+        }/main.js"></script></body>
       </html>
     `);
   });
@@ -56,6 +59,7 @@ export default context => {
     Graph(context),
     Security(context),
     Project(context),
-    Model(context)
+    Model(context),
+    Images(context)
   ];
 };

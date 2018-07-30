@@ -46,6 +46,7 @@
   "dependencies": {
     "auth-header": "^0.3.1",
     "body-parser": "~1.17.1",
+    "cloudinary": "^1.11.0",
     "debug": "~2.6.3",
     "elasticsearch": "^15.1.1",
     "express": "~4.15.2",
