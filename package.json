@@ -1,5 +1,5 @@
 {
-  "name": "whppt",
+  "name": "whppt-cms",
   "version": "0.1.1",
   "description": "Easy to use CMS for javascript projects.",
   "main": "index.js",
