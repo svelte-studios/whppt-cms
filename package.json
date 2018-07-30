@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/svelte-studios/whppt-cms/issues"
   },
-  "homepage": "https://github.com/svelte-studios/whppt-cms#readme",
+  "homepage": "https://github.com/svelte-studios/whppt-cms#README.md",
   "ava": {
     "require": [
       "@babel/register"
