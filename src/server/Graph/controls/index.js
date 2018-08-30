@@ -5,6 +5,7 @@ const image = require('./image');
 const imageSet = require('./imageSet');
 const content = require('./content');
 const date = require('./date');
+const select = require('./select');
 
 module.exports = {
   'whppt-text': text,
@@ -13,5 +14,6 @@ module.exports = {
   'whppt-image': image,
   'whppt-image-set': imageSet,
   'whppt-content': content,
-  'whppt-date': date
+  'whppt-date': date,
+  'whppt-select': select
 }
