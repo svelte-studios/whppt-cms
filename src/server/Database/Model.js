@@ -20,6 +20,10 @@ export default ({ $projects, $Id }) => {
       const { Model, context } = ModelContext(projectId, type);
       return Model.list(context);
     },
+    filterByIds: ({ projectId, type, ids }) => {
+      const { Model, context } = ModelContext(projectId, type);
+      return Model.filterByIds(context, { ids });
+    },
     save: ({ projectId, type, item }) => {
       const { Model, context } = ModelContext(projectId, type);
       return Model.save(context, { item });

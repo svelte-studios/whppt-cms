@@ -33,6 +33,15 @@ export default ({ $JsonRouter, $security, $db, $ROLES, $projects }) => {
     }
   );
 
+  router.post(
+    "/api/project/:projectId/type/:type/filterByIds",
+    $security.authenticate(),
+    $security.authorise.project("projectId", $ROLES.READ),
+    req => {
+      return $db.Model.filterByIds({ ...req.params, ids: req.body });
+    }
+  );
+
   router.get(
     "/api/project/:projectId/type/:type/model/:id",
     $security.authenticate(),

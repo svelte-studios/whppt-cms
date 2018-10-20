@@ -1,54 +1,96 @@
-import api from '@/api';
-import router from '@/router';
+import api from "@/api";
 
 export default {
   loadModels({ commit, state }, { projectId, type }) {
     state.loading = true;
-    return api.obj.list(projectId, type)
-      .then(models => commit('loadedModels', models));
+    return api.obj
+      .list(projectId, type)
+      .then(models => commit("loadedModels", models));
   },
 
   loadModel({ commit, state }, { projectId, type, id }) {
-    if (id === 'new') {
-      let model = {};
-      return commit('loadedModel', ensureAttributes(model, state.attributes))
-    };
+    if (id === "new") {
+      const model = {};
+      return commit("loadedModel", ensureAttributes(model, state.attributes));
+    }
 
-    return axios.get(`/api/project/${projectId}/type/${type}/model/${id}`)
+    return axios
+      .get(`/api/project/${projectId}/type/${type}/model/${id}`)
       .then(response => {
-        let model = ensureAttributes(response.data, state.attributes);
-        commit('loadedModel', model);
+        const model = ensureAttributes(response.data, state.attributes);
+        commit("loadedModel", model);
+        return model;
       });
   },
 
   loadModelType({ commit }, { projectId, type }) {
-    return axios.get(`/api/project/${projectId}/type/${type}`)
-      .then(response => commit('loadedModelType', response.data));
+    return axios
+      .get(`/api/project/${projectId}/type/${type}`)
+      .then(response => commit("loadedModelType", response.data));
   },
 
   loadAttributes({ commit }, { projectId, type }) {
-    return axios.get(`/api/project/${projectId}/type/${type}/attributes`)
+    return axios
+      .get(`/api/project/${projectId}/type/${type}/attributes`)
       .then(response => {
-        let groupedAttributes = _.groupBy(response.data, a => a.tab || 'General');
-        commit('loadedAttributes', response.data);
-        commit('groupedAttributes', groupedAttributes);
+        const groupedAttributes = _.groupBy(
+          response.data,
+          a => a.tab || "General"
+        );
+        commit("loadedAttributes", response.data);
+        commit("groupedAttributes", groupedAttributes);
       });
   },
 
-  save({ commit, state }, { projectId, type }) {
-    return axios.post(`/api/project/${projectId}/type/${type}/model`, state.model)
-      .then(response => { return response.data; })
-      .then(id => router.push(`/project/${projectId}/type/${type}/model/${id}`));
+  save({ state }, { projectId, type, doc }) {
+    doc = doc || state.model;
+    return axios
+      .post(`/api/project/${projectId}/type/${type}/model`, doc)
+      .then(response => {
+        return response.data;
+      });
   },
 
-  deleteModel({ commit, state }, { projectId, type, id }) {
-    return axios.post(`/api/project/${projectId}/type/${type}/model/${id}/delete`)
-      .then(() => {
-        let withoutDeletingModel = _.filter(state.list, model => model.id != id);
-        let newOrder = _.map(withoutDeletingModel, model => model.id);
-        axios.post(`/api/project/${projectId}/type/${type}/order`, newOrder);
-      })
-      .then(() => commit("deletedModel", id))
+  deleteModel({ commit, state, rootState }, { projectId, type, id }) {
+    //TODO: need this to be checked by the components.
+    const _type = _.find(rootState.project.project.types, t => t.id === type);
+    const attsWithOtherTypes = _.filter(
+      _type.attributes,
+      att => att.control === "whppt-ordered-type-list"
+    );
+    return axios
+      .get(`/api/project/${projectId}/type/${type}/attributes`)
+      .then(_attributes => {
+        return axios
+          .get(`/api/project/${projectId}/type/${type}/model/${id}`)
+          .then(__model => {
+            const _model = ensureAttributes(__model.data, _attributes.data);
+            const hasOtherTypes = _.find(attsWithOtherTypes, att => {
+              const attValue = _model[att.name];
+              return attValue && attValue.length > 0;
+            });
+
+            if (hasOtherTypes)
+              return Promise.reject(
+                "Cannot remove, related items need to be removed first."
+              );
+
+            return axios
+              .post(`/api/project/${projectId}/type/${type}/model/${id}/delete`)
+              .then(() => {
+                const withoutDeletingModel = _.filter(
+                  state.list,
+                  model => model.id != id
+                );
+                const newOrder = _.map(withoutDeletingModel, model => model.id);
+                axios.post(
+                  `/api/project/${projectId}/type/${type}/order`,
+                  newOrder
+                );
+              })
+              .then(() => commit("deletedModel", id));
+          });
+      });
   },
 
   // moveUp({ commit, state }, { projectId, type, id }) {
@@ -98,25 +140,25 @@ export default {
   // },
 
   reOrder({ commit, state }, { projectId, type, value }) {
-    let newOrder = _.map(value, v => v.id);
+    const newOrder = _.map(value, v => v.id);
     _.each(value, (v, index) => {
-      v._order = index
+      v._order = index;
     });
 
-    return api.obj.order(projectId, type, newOrder)
-      .then(() => commit('orderedObjects', value))
+    return api.obj
+      .order(projectId, type, newOrder)
+      .then(() => commit("orderedObjects", value))
       .catch(err => {
         state.error = err.message;
       });
   }
-
 };
 
-let ensureAttributes = function(model, attributes) {
-  let m = { id: model.id };
+const ensureAttributes = function(model, attributes) {
+  const m = { id: model.id };
   _.each(attributes, a => {
     m[a.name] = model[a.name];
-  })
+  });
   m._order = model._order;
   return m;
 };

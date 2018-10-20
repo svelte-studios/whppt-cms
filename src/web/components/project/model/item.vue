@@ -21,8 +21,10 @@
             <label>{{att.label}}</label>
             <component :is="att.control"
                        v-model="model[att.name]"
+                       :parent="model"
                        :projectId="projectId"
                        :att="att"
+                       :type="type"
                        :id="'field_' + att.name"></component>
           </div>
         </div>
@@ -38,26 +40,27 @@
 </template>
 
 <script>
-import whpptText from 'Components/controls/text';
-import whpptMarkdownPreview from 'Components/controls/markdownPreview';
-import whpptMarkdownPreview2 from 'Components/controls/markdownPreview2';
-import whpptImage from 'Components/controls/image';
-import whpptCta from 'Components/controls/cta';
-import whpptScheduleOpenHours from 'Components/controls/schedule/openHours';
-import whpptImageSet from 'Components/controls/imageSet';
-import whpptLinks from 'Components/controls/links';
-import whpptContent from 'Components/controls/content';
-import whpptDate from 'Components/controls/date';
-import whpptTags from 'Components/controls/tags';
-import whpptVideo from 'Components/controls/video';
-import whpptCards from 'Components/controls/cards/cards';
-import whpptCheckbox from 'Components/controls/checkbox';
-import whpptLookup from 'Components/controls/lookup';
-import whpptSelect from 'Components/controls/select';
+import whpptText from "Components/controls/text";
+import whpptMarkdownPreview from "Components/controls/markdownPreview";
+import whpptMarkdownPreview2 from "Components/controls/markdownPreview2";
+import whpptImage from "Components/controls/image";
+import whpptCta from "Components/controls/cta";
+import whpptScheduleOpenHours from "Components/controls/schedule/openHours";
+import whpptImageSet from "Components/controls/imageSet";
+import whpptLinks from "Components/controls/links";
+import whpptContent from "Components/controls/content";
+import whpptDate from "Components/controls/date";
+import whpptTags from "Components/controls/tags";
+import whpptVideo from "Components/controls/video";
+import whpptCards from "Components/controls/cards/cards";
+import whpptCheckbox from "Components/controls/checkbox";
+import whpptLookup from "Components/controls/lookup";
+import whpptSelect from "Components/controls/select";
+import whpptOrderedTypeList from "Components/controls/orderedTypeList";
 
 export default {
-  name: 'model',
-  props: ['projectId', 'type', 'id'],
+  name: "model",
+  props: ["projectId", "type", "id"],
   components: {
     whpptText,
     whpptMarkdownPreview,
@@ -74,44 +77,50 @@ export default {
     whpptCards,
     whpptCheckbox,
     whpptLookup,
-    whpptSelect
+    whpptSelect,
+    whpptOrderedTypeList
   },
   data() {
     return {
       busy: false,
-      activeTab: 'General'
-    }
+      activeTab: "General"
+    };
   },
   mounted() {
     this.fetchModel();
   },
   watch: {
-    '$route': 'fetchModel'
+    $route: "fetchModel"
   },
   methods: {
-    ...Vuex.mapActions('model', ['loadAttributes', 'loadModel', 'save']),
-    saveModel: function() {
-      let vm = this;
+    ...Vuex.mapActions("model", ["loadAttributes", "loadModel", "save"]),
+    saveModel() {
+      const vm = this;
       vm.busy = true;
-      let args = {
+      const args = {
         projectId: this.projectId,
         type: this.type,
         id: this.id
       };
-      console.log('ARGS', args)
-      this.save(args).then(() => vm.busy = false);
+      return this.save(args).then(id => {
+        vm.$router.push(
+          `/project/${args.projectId}/type/${args.type}/model/${id}`
+        );
+        return id;
+      });
+      // .then(() => (vm.busy = false));
     },
-    fetchModel: function() {
-      let args = {
+    fetchModel() {
+      const args = {
         projectId: this.projectId,
         type: this.type,
         id: this.id
-      }
+      };
       this.busy = true;
       this.loadAttributes(args)
         .then(() => this.loadModel(args))
         .then(() => {
-          this.busy = false
+          this.busy = false;
         });
     },
     tabName(raw) {
@@ -121,7 +130,7 @@ export default {
       this.activeTab = groupName;
     }
   },
-  computed: Vuex.mapState('model', ['model', 'attributes', 'groupedAttributes'])
+  computed: Vuex.mapState("model", ["model", "attributes", "groupedAttributes"])
 };
 </script>
 

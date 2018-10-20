@@ -5,7 +5,7 @@
                  :id='"project_" + project.id'
                  :collapsed="activeGroup != groupName"
                  @selected="() => activeGroup = groupName">
-      <template v-for="type in group">
+      <template v-for="type in group" v-if="!type.isHiddenType">
           <nav-button v-if="!type.single"
             :text="type.label.plural"
             :slug="type.slug.plural"
@@ -32,27 +32,27 @@
 </template>
 
 <script>
-import navSection from './section';
-import navButton from './button';
+import navSection from "./section";
+import navButton from "./button";
 
 export default {
-  name: 'menu',
-  prop: ['project'],
+  name: "menu",
+  prop: ["project"],
   data() {
     return {
-      activeGroup: ''
-    }
+      activeGroup: ""
+    };
   },
   components: {
     navSection,
     navButton
   },
   computed: {
-    ...Vuex.mapState('project', ['project']),
+    ...Vuex.mapState("project", ["project"]),
     groups() {
-      let groups = _.groupBy(this.project.types, t => t.group || 'Other');
-      this.activeGroup = 'Other';
-      if (groups[0]) this.activeGroup = groups[0].group || 'Other';
+      let groups = _.groupBy(this.project.types, t => t.group || "Other");
+      this.activeGroup = "Other";
+      if (groups[0]) this.activeGroup = groups[0].group || "Other";
       return groups;
     }
   }
@@ -61,15 +61,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-@import '../../../style/variables';
+@import "../../../style/variables";
 
 .app-menu {
-    background-color: $gray-100;
-    color: $gray-700;
-    width: 300px;
-    height: calc(100% - 50px);
-    position: fixed;
-    left: 0;
-    overflow: scroll;
+  background-color: $gray-100;
+  color: $gray-700;
+  width: 300px;
+  height: calc(100% - 50px);
+  position: fixed;
+  left: 0;
+  overflow: scroll;
 }
 </style>

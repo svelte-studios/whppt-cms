@@ -1,7 +1,7 @@
 const _ = require("lodash");
-const ElasticDB = require("../src/ElasticSearch").default;
+const ElasticDB = require("../../src/ElasticSearch").default;
 
-const elastic_config = require("./elasticsearch");
+const elastic_config = require("../elasticsearch");
 const article = require("./article");
 const page = require("./page");
 const setting = require("./setting");

@@ -19,10 +19,13 @@
             <router-link :to="{name: 'model',params: getItemArgs(item)}"
                          class="col s6">
               {{ item._name }} ({{ item.id }})
+              <div class="item-error">
+                {{ item.error }}
+              </div>
             </router-link>
             <div class="col s1">
               <button class="delete btn-floating btn-small waves-effect waves-light blue"
-                      @click="deleteModel(getItemArgs(item))">
+                      @click="doDelete(item)">
                   <i class="material-icons left">delete</i>
                 </button>
             </div>
@@ -63,20 +66,24 @@
       <i class="material-icons left">add</i> New
     </router-link>
   </div>
+  <div class="hidden-error">
+    {{ error }}
+  </div>
 </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+import draggable from "vuedraggable";
 
 export default {
-  name: 'collection-list',
-  props: ['projectId', 'type', 'id'],
-  components: { draggable, },
+  name: "collection-list",
+  props: ["projectId", "type", "id"],
+  components: { draggable },
   data() {
     return {
-      busy: true
-    }
+      busy: true,
+      error: ""
+    };
   },
   mounted() {
     this.busy = true;
@@ -85,25 +92,37 @@ export default {
         projectId: this.projectId,
         type: this.type
       })
-      .then(() => this.loadModels({
-        projectId: this.projectId,
-        type: this.type
-      }))
+      .then(() =>
+        this.loadModels({
+          projectId: this.projectId,
+          type: this.type
+        })
+      )
       .then(() => {
-        this.busy = false
+        this.busy = false;
       });
   },
-  watch: { '$route': 'fetchModel' },
+  watch: { $route: "fetchModel" },
   // beforeRouteUpdate(to, from, next) {
   //   this.$store.dispatch('loadObjects', to.params.type);
   //   next();
   // },
   methods: {
-    ...Vuex.mapActions('model', [
-      'loadModels', 'deleteModel', 'reOrder',
-      'loadModelType'
+    ...Vuex.mapActions("model", [
+      "loadModels",
+      "deleteModel",
+      "reOrder",
+      "loadModelType"
     ]),
-    ...Vuex.mapGetters('model', ['first', 'last', 'showList']),
+    doDelete(item) {
+      const vm = this;
+      const args = this.getItemArgs(item);
+      this.deleteModel(args).catch(err => {
+        item.error = err.message || err;
+        vm.error = err.message || err;
+      });
+    },
+    ...Vuex.mapGetters("model", ["first", "last", "showList"]),
     getItemArgs(item) {
       return {
         projectId: this.projectId,
@@ -123,24 +142,26 @@ export default {
         projectId: this.projectId,
         type: this.type,
         id: this.id
-      }
+      };
       this.busy = true;
 
       this.loadModelType({
           projectId: this.projectId,
           type: this.type
         })
-        .then(() => this.loadModels({
-          projectId: this.projectId,
-          type: this.type
-        }))
+        .then(() =>
+          this.loadModels({
+            projectId: this.projectId,
+            type: this.type
+          })
+        )
         .then(() => {
-          this.busy = false
+          this.busy = false;
         });
     }
   },
   computed: {
-    ...Vuex.mapState('model', ['list', 'model_type']),
+    ...Vuex.mapState("model", ["list", "model_type"]),
     myList: {
       get() {
         return this.list;
@@ -150,7 +171,7 @@ export default {
           projectId: this.projectId,
           type: this.type,
           value
-        })
+        });
       }
     }
   }
@@ -162,5 +183,11 @@ export default {
 .list__drag {
     float: right;
     cursor: move;
+}
+.hidden-error {
+    color: white;
+}
+.item-error {
+    color: red;
 }
 </style>

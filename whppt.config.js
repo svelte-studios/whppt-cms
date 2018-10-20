@@ -1,11 +1,12 @@
-var ElasticDB = require("./src/ElasticSearch").default;
+const ElasticDB = require("./src/ElasticSearch").default;
 
-var project = require("./Project");
-var elastic_config = require("./Project/elasticsearch");
+const blog = require("./Project/blog");
+const store = require("./Project/shop");
+const elastic_config = require("./Project/elasticsearch");
 
 module.exports = {
   db: ElasticDB(elastic_config),
-  projects: [project],
+  projects: [blog, store],
   security: {
     token: {
       // this will be used by JWT
