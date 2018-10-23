@@ -1,6 +1,6 @@
 {
   "name": "whppt-cms",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Easy to use CMS for javascript projects.",
   "main": "index.js",
   "scripts": {
